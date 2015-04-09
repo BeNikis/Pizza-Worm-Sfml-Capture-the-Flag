@@ -68,7 +68,7 @@ class Turner {
 	
 	
 
-class Snake {
+class Snake : public sf::Drawable {
 	
 	
 	Turner* turner;
@@ -187,7 +187,7 @@ class Snake {
 		return head.intersects(obj.getGlobalBounds());
 	};
 		
-	void draw(sf::RenderWindow& win) {
+	void draw(sf::RenderTarget& win,sf::RenderStates states=sf::RenderStates::Default) const {
 		sf::CircleShape point(15);
 		
 		point.setFillColor(plcolors[id]); //Warning-out of bounds error when there more than four players
@@ -196,7 +196,7 @@ class Snake {
 		for (int i=0;i<size;i++) {
 			
 			point.setPosition(snake[i]);
-			win.draw(point);
+			win.draw(point,states);
 		};
 		
 	};
@@ -223,6 +223,7 @@ int main(int argc, char** argv)
 	Settings settings=Settings();	
 	std::vector<Snake> players;
 	sf::Text scores;
+	
 	Flag flags[2]={Flag(sf::Color::Blue,sf::Vector2f(XRES-50,YRES/2)),Flag(sf::Color::Red,sf::Vector2f(50,YRES/2))};
 	
 	flags[0].setFillColor(sf::Color::Blue);
@@ -230,6 +231,7 @@ int main(int argc, char** argv)
 	
 	
 	scores.setPosition(0,0);
+	scores.setColor(sf::Color::White);
 	players.push_back(Snake(5,0,sf::Vector2f(15,15),new Turner(settings.controlls[0])));
 	players.push_back(Snake(5,-3.1428,sf::Vector2f(XRES-15,YRES-45),new Turner(settings.controlls[1])));
 
@@ -267,7 +269,7 @@ int main(int argc, char** argv)
 		
 		
 		for (int i=0;i<players.size();i++) {
-			players[i].draw(win);
+			win.draw(players[i]);
 			for (int y=0;y<2;y++) {
 				if (players[i].collide(flags[y])) {
 					if (i!=y) {
@@ -285,7 +287,7 @@ int main(int argc, char** argv)
 			};
 			
 			
-			scorestr+="P"+std::to_string(players[i].id+1)+": "+std::to_string(players[i].score)+"\n";
+			//scorestr+="P"+std::to_string(players[i].id+1)+": "+std::to_string(players[i].score)+"\n";
 		};
 		scores.setString(scorestr);
 		win.draw(scores);
